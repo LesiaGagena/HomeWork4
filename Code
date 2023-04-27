@@ -1,0 +1,57 @@
+contacts = {}
+
+def input_error(func):
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError:
+            return "Contact not found"
+        except ValueError:
+            return "Please provide name and phone number separated by space"
+        except IndexError:
+            return "Please provide name or name and phone number separated by space"
+    return inner
+
+@input_error
+def add_contact(contact):
+    name, phone = contact.split()
+    contacts[name] = phone
+    return f"{name}'s phone number saved"
+
+@input_error
+def change_contact(contact):
+    name, phone = contact.split()
+    contacts[name] = phone
+    return f"{name}'s phone number changed"
+
+@input_error
+def phone_number(name):
+    return contacts[name]
+
+def show_all():
+    if not contacts:
+        return "No contacts found"
+    return "\n".join([f"{name}: {contacts[name]}" for name in contacts])
+
+def main():
+    print("How can I help you?")
+    while True:
+        command = input().strip().lower()
+        if command == "hello":
+            print("How can I help you?")
+        elif command.startswith("add"):
+            print(add_contact(command[4:].strip()))
+        elif command.startswith("change"):
+            print(change_contact(command[7:].strip()))
+        elif command.startswith("phone"):
+            print(phone_number(command[6:].strip()))
+        elif command == "show all":
+            print(show_all())
+        elif command in ["good byeclose", "close", "exit"]:
+            print("Good bye!")
+            break
+        else:
+            print("Command not recognized")
+
+if __name__ == "__main__":
+    main()

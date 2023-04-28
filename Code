@@ -13,7 +13,7 @@ def input_error(func):
     return inner
 
 @input_error
-def add_contact(contact):
+def add_contact(name, phone):
     name, phone = contact.split()
     contacts[name] = phone
     return f"{name}'s phone number saved"

@@ -19,7 +19,7 @@ def add_contact(contact):
     return f"{name}'s phone number saved"
 
 @input_error
-def change_contact(contact):
+def change(name, number):
     name, phone = contact.split()
     contacts[name] = phone
     return f"{name}'s phone number changed"
@@ -38,20 +38,27 @@ def main():
     while True:
         command = input().strip().lower()
         if command == "hello":
-            print("How can I help you?")
+            message = "How can I help you?"
+        print(message)
         elif command.startswith("add"):
-            print(add_contact(command[4:].strip()))
+            ac = add_contact(command[4:].strip())
+        print(ac)
         elif command.startswith("change"):
-            print(change_contact(command[7:].strip()))
+            cc = change_contact(command[7:].strip())
+        print(cc)
         elif command.startswith("phone"):
-            print(phone_number(command[6:].strip()))
+            phone = phone_number(command[6:].strip())
+        print(phone)
         elif command == "show all":
-            print(show_all())
+            sa = show_all()
+        print(sa)
         elif command in ["good byeclose", "close", "exit"]:
-            print("Good bye!")
+            message = "Good bye!"
+        print(message)
             break
         else:
-            print("Command not recognized")
+            message = "Command not recognized"
+        print(message)
 
 if __name__ == "__main__":
     main()

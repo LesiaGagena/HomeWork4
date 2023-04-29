@@ -1,64 +1,79 @@
-ccloseontacts = {}
+contacts = {}  # додано відсутнє оголошення словника
 
+#decorator
 def input_error(func):
-    def inner(*args, **kwargs):
+    def inner(*args):
         try:
-            return func(*args, **kwargs)
+            result = func(*args)
+            return result
         except KeyError:
             return "Contact not found"
         except ValueError:
-            return "Please provide name and phone number separated by space"
+            return "Please give me name and phone number separated by space"
         except IndexError:
             return "Please provide name or name and phone number separated by space"
     return inner
 
-@input_error
-def add_contact(name, phone):
-    name, phone = contact.split()
-    contacts[name] = phone
-    return f"{name}'s phone number saved"
 
-@input_error
+
+def hello_users(_):
+    print("How can I help you?")
+
+@error_handler
+def add_contact(args):  
+    name, phone = args  # розбиваємо аргумент на name та phone
+    contacts[name] = phone
+    return f"{name}'s phone number {phone} added"
+
+def unknown_command(_):
+    print('Unknown command') 
+
+@error_handler
 def change_contact(name, phone):
-    name, phone = contact.split()
+    old_phone = contacts[name]
     contacts[name] = phone
-    return f"{name}'s phone number changed"
+    return f"{name}'s old phone number {old_phone} changed to {phone}"
 
-@input_error
-def phone_number(name):
-    return contacts[name]
-
-def show_all():
+def show_all(_):
     if not contacts:
         return "No contacts found"
-    return "\n".join([f"{name}: {contacts[name]}" for name in contacts])
+    for name, phone in contacts.items():
+        result += f'Name {name}: phone {phone} \n'
+    return result
+
+
+HANDLERS {
+    'hello': hello_users,
+    'add': add_contact,
+    'change': change_contact,
+    'show all': show_all
+}
+
+
+def parse_input(user_input):
+    command, *args = user_input.split()
+    command = command.lstrip()
+
+
+    try:
+        handler =   HANDLERS[command.lower()]
+    except KeyError:
+        if args:
+            command = command + ' ' + args[0]
+            args = args[1:]
+        handler = HANDLERS.get(command.lower(), unknown_command)
+    return handler, args
+
 
 def main():
-    print("How can I help you?")
     while True:
-        command = input().strip().lower()
-        if command == "hello":
-            message = "How can I help you?"
-            print(message)
-        elif command.startswith("add"):
-            ac = add_contact(command[4:].strip())
-            print(ac)
-        elif command.startswith("change"):
-            cc = change_contact(command[7:].strip())
-            print(cc)
-        elif command.startswith("phone"):
-            phone = phone_number(command[6:].strip())
-            print(phone)
-        elif command == "show all":
-            sa = show_all()
-            print(sa)
-        elif command in ["good byeclose", "close", "exit"]:
-            message = "Good bye!"
-            print(message)
+        user_input = input('Please, imput command and args. For example: add Lesia 033-332-2233')
+        handler, *args = parse_input(user_input)
+        result = handler(*args)
+        if not result:
+            print('inpout true args')
             break
-        else:
-            message = "Command not recognized"
-            print(message)
+        print(result)
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
-contacts = {}  # додано відсутнє оголошення словника
+contacts = {}  # added missing dictionary declaration
 
-#decorator
+# decorator
 def input_error(func):
     def inner(*args):
         try:
@@ -20,28 +20,28 @@ def exit_test(_):
 def hello_users(_):
     print("How can I help you?")
 
-@error_handler
+@input_error
 def add_contact(args):  
-    name, phone = args  # розбиваємо аргумент на name та phone
+    name, phone = args  # unpack the argument into name and phone
     contacts[name] = phone
     return f"{name}'s phone number {phone} added"
 
 def unknown_command(_):
     print('Unknown command') 
 
-@error_handler
+@input_error
 def change_contact(name, phone):
     old_phone = contacts[name]
     contacts[name] = phone
     return f"{name}'s old phone number {old_phone} changed to {phone}"
 
-def show_phone(name):
+def show_phone(search_name):
     if not contacts:
         return "No contacts found"
     for name, phone in contacts.items():
-        result = f'Name {name}: phone {phone}'
-    return result
-
+        if name == search_name:
+            return f'Name {name}: phone {phone}'
+    return "Contact not found"
 
 def show_all(_):
     result = ''
@@ -51,39 +51,36 @@ def show_all(_):
         result += f'Name {name}: phone {phone} \n'
     return result
 
-HANDLERS {
+HANDLERS = {
     'hello': hello_users,
     'add': add_contact,
     'change': change_contact,
     'show all': show_all,
     'exit': exit_test,
-    'goodbey': exit_test,
+    'goodbye': exit_test,  # corrected spelling
     'close': exit_test
 }
 
-
 def parse_input(user_input):
-    command, *args = user_input.split()
-    command = command.lstrip()
-
+    command_name, *args = user_input.split()
+    command_name = command_name.lstrip()
 
     try:
-        handler =   HANDLERS[command.lower()]
+        handler = HANDLERS[command_name.lower()]
     except KeyError:
         if args:
-            command = command + ' ' + args[0]
+            command_name = command_name + ' ' + args[0]
             args = args[1:]
-        handler = HANDLERS.get(command.lower(), unknown_command)
+        handler = HANDLERS.get(command_name.lower(), unknown_command)
     return handler, args
-
 
 def main():
     while True:
-        user_input = input('Please, imput command and args. For example: add Lesia 033-332-2233')
+        user_input = input('Please input command and args. For example: add Lesia 033-332-2233')
         handler, *args = parse_input(user_input)
         result = handler(*args)
         if not result:
-            print('inpout true args')
+            print('input true args')  # corrected typo
             break
         print(result)
 
